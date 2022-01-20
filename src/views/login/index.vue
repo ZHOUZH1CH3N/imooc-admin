@@ -1,6 +1,11 @@
 <template>
   <div class="login-container">
-    <el-form class="login-form" :model="loginForm" :rules="loginRules">
+    <el-form
+      class="login-form"
+      ref="loginFormRef"
+      :model="loginForm"
+      :rules="loginRules"
+    >
       <div class="title-container">
         <h3 class="title">用户登录</h3>
       </div>
@@ -29,7 +34,11 @@
           <svg-icon :icon="passwordType === 'password' ? 'eye' : 'eye-open'" />
         </span>
       </el-form-item>
-      <el-button type="primary" style="width: 100%; margin-bottom: 30px"
+      <el-button
+        type="primary"
+        style="width: 100%; margin-bottom: 30px"
+        @click="handleLogin"
+        :loading="loading"
         >登录</el-button
       >
     </el-form>
@@ -39,6 +48,7 @@
 <script setup>
 // 导入的组件可以直接使用
 import { ref } from 'vue'
+import { useStore } from 'vuex'
 import { validatePassword } from './rules'
 // 数据源
 const loginForm = ref({
@@ -68,6 +78,28 @@ const onChangePwdType = () => {
   // ref声明数据，需要用value获取具体的值
   // 在template中使用不需要使用value
   passwordType.value = passwordType.value === 'password' ? 'text' : 'password'
+}
+// 登录loading
+const loading = ref(false)
+const store = useStore()
+const loginFormRef = ref(null)
+const handleLogin = () => {
+  loginFormRef.value.validate((valid) => {
+    if (!valid) {
+      return
+    }
+    loading.value = true
+    store
+      .dispatch('user/login', loginForm.value)
+      .then(() => {
+        loading.value = false
+        // TODO
+      })
+      .catch((err) => {
+        loading.value = false
+        console.log(err)
+      })
+  })
 }
 </script>
 
