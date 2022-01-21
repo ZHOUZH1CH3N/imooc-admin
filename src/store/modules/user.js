@@ -3,6 +3,7 @@ import { login, getUserInfo } from '../../api/sys'
 import { setItem, getItem, removeAllItem } from '../../utils/storage'
 import { TOKEN } from '@/constant'
 import router from '@/router'
+import { setTimeStamp } from '@/utils/auth'
 
 export default {
   namespaced: true,
@@ -31,6 +32,8 @@ export default {
             this.commit('user/setToken', data.token)
             // 跳转
             router.push('/')
+            // 保存登录时间
+            setTimeStamp()
             resolve(data)
           })
           .catch((err) => {
